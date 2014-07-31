@@ -79,26 +79,70 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
+      //this.rows(rowIndex)
+      //loop through row index array
+      var currentRow = this.rows()[rowIndex];
+
+      var flag = false;
+      for(var i = 0; i < currentRow.length; i++) {
+
+        if(flag === true && currentRow[i] === 1) {
+          return true;
+        }
+        if(currentRow[i] === 1) {
+          flag = true;
+        }
+      }
+      //check if any element contains a rook
+      //if it does, return true
       return false; // fixme
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      //loop through all rows
+
+        var numRows = this.get('n');
+        for(var j = 0; j < numRows; j++) {
+
+          if(this.hasRowConflictAt(j)) {
+            return true;
+          }
+        }
+        return false;
     },
-
-
-
     // COLUMNS - run from top to bottom
     // --------------------------------------------------------------
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      var boardMatrix = this.rows();
+      var collisionFlag = false;
+
+        for(var i = 0; i < boardMatrix.length;i++){
+          if(boardMatrix[i][colIndex] === 1 && collisionFlag === true)
+          {
+            return true;
+          }
+          if(boardMatrix[i][colIndex] === 1)
+          {
+            collisionFlag = true;
+          }
+        }
+
+
+      return false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
+      var numCol = this.get('n');
+
+      for(var j = 0; j < numCol; j++){
+      if(this.hasColConflictAt(j)){
+        return true;
+        }
+      }
       return false; // fixme
     },
 
