@@ -34,75 +34,135 @@ window.findNRooksSolution = function(n) {
   return solution.rows();
 };
 
+// window.countNRooksSolutions = function(n) {
+// var solutioncount = undefined;
+
+//   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+//   return solutionCount;
+// }
+
+
 window.countNRooksSolutions = function(n) {
-var solutioncount = undefined;
+  var temp = n*n;
+  temp = Math.round(temp);
+ var solutioncount = window.countNRooksSolution(n,temp);
 
-  console.log('Number of solutions for ' + solution.rows().length + ' rooks:', solutionCount);
-  return solutionCount;
-return solutioncount;
+  return solutioncount[0];
+
 }
-/*
 
-window.countNRooksSolutions = function(n) {
- var solutioncount = window.countNRooksSolution(n);
+var extend = function(obj) {
+    if(arguments.length ===1)
+    {
+      return obj;
+    }
+    else
+    {
+     var args =Array.prototype.slice.call(arguments,1);
+    _.each(args, function(value,key){
 
-return solutioncount[0];
-}
+     for(key in value)
+      {
+        obj[key] = value[key];
+      }
+    });
+
+return obj;
+
+
+
+
+
+    }
+
+  };
+
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
-window.countNRooksSolution = function(n, oldBoardState, oldClearedStates,oldRooks, solution) {
-
+window.countNRooksSolution = function(n, maxCell, oldBoardState, oldClearedStates,oldRooks, solution, oldCurrentCell) {
+      //console.log(n != undefined);
        if(n != undefined){
         var solution = new Board({n:n});
+  console.log(solution.attributes)   ;
          var currentBoardState = solution.rows();
-         var clearedStates = [];
+  console.log("Testing= " + solution.rows());
+
+         var oldClearedStates = {};
          var rooks = 0;
+          console.log(solution.get('n'));
 
        }
        else
        {
+
          var currentBoardState = oldBoardState;
+        console.log("CurrentBoardState ||AFTER = " +currentBoardState);
          var clearedStates = oldClearedStates;
          rooks = oldRooks;
 
-         solution.attributes = currentBoardState;
-         console.log(solution.attributes);
+
+         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
+
        }
+    if(maxCell)
+      {
+      var currentCell = 0;
+      }
+    else
+    {
+      var currentCell = 0;
 
+    }
 
-         var solutionCount = [0, clearedStates]; //fixme
+         var solutionCount = [0, oldClearedStates]; //fixme
 
        if(rooks === currentBoardState.length)
-        {  var hasBeenDone = false;
+        {
+//          var hasBeenDone = false;
+// debugger;
+//          for(var t = 0; t < clearedStates.length; t++)
+//          {
 
-
-         for(var t = 0; t < oldClearedStates.length; t++)
-         {
-          if(oldClearedStates[t] === currentBoardState)
-          {
-           hasBeenDone = true;
-          }
-
-
-
+//  console.log(clearedStates[t]);
+//  console.log("current Board state: " + currentBoardState);
+//  console.log("rook count = " + rooks);
+//           if(clearedStates[t] === currentBoardState)
+//           {
+//            hasBeenDone = true;
+//           }
+      if(solutionCount[1][currentBoardState])
+      {
+        return solutionCount;
       }
 
-       if(hasBeenDone === false)
-         {
+
+//       }
+
+//        if(hasBeenDone === false)
+//          {
+
+         // solutionCount[1].push(currentBoardState);
           solutionCount[0] += 1;
-         }
+          solutionCount[1][currentBoardState] = currentBoardState;
+         // console.log("Stored!        " + currentBoardState);
+         // console.log("Cleared states: " +clearedStates);
+         // }
 
          return solutionCount;
         }
 
 
 
-
+//console.log("CurrentBoardState = " +currentBoardState);
   for(var r = 0; r < currentBoardState.length; r++){
       for(var c = 0; c < currentBoardState[r].length; c++) {
            var rowConflictExists = false;
+           currentCell +=1;
         if(currentBoardState[r][c] === 0) {
             currentBoardState[r][c] = 1;
+
+         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
+
             rooks += 1;
 
 
@@ -122,19 +182,39 @@ window.countNRooksSolution = function(n, oldBoardState, oldClearedStates,oldRook
               }
 
 
+         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
+
             if(currentBoardState[r][c] === 1)
             {
             //recursive function call;
-            var returnArr = window.countNRooksSolution(undefined, currentBoardState, clearedStates, rooks, solution);
+         //   console.log("CurrentBoardState ||BEFORE = " +currentBoardState);
+            var returnArr = window.countNRooksSolution(undefined, undefined, currentBoardState, solutionCount[1], rooks, solution);
             //add to solutioncount
                 solutionCount[0] = solutionCount[0] + returnArr[0];
+
+                 solutionCount[1] = extend(solutionCount[1], returnArr[1]);
+
+
+
+                currentBoardState[r][c] = 0;
+
+         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
+
+                rooks -=1;
+
             }
           }
-
+    // if(currentCell === maxCell)
+    // {
+    //   break;
+    // }
 
         }
 
-
+ // if(currentCell === maxCell)
+ //    {
+ //      break;
+ //    }
 
 
       }
@@ -143,11 +223,11 @@ window.countNRooksSolution = function(n, oldBoardState, oldClearedStates,oldRook
 
 
 
-  console.log('Number of solutions for ' + solution.rows().length + ' rooks:', solutionCount);
+  //console.log('Number of solutions for ' + solution.rows().length + ' rooks:', solutionCount);
   return solutionCount;
 };
 
-*/
+
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
