@@ -14,24 +14,9 @@
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution = new Board({n:n});
-    for(var r = 0; r < solution.rows().length; r++){
-      for(var c = 0; c < solution.rows()[r].length; c++) {
-
-        if(solution.rows()[r][c] === 0) {
-            solution.rows()[r][c] = 1;
-              if(solution.hasAnyRowConflicts()){
-                 solution.rows()[r][c] = 0;
-              }
-              if(solution.hasAnyColConflicts()){
-                 solution.rows()[r][c] = 0;
-              }
-        }
-      }
-    }
-
+ var solution = undefined;
   //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution.rows();
+  return solution;
 };
 
 // window.countNRooksSolutions = function(n) {
@@ -42,188 +27,56 @@ window.findNRooksSolution = function(n) {
 // }
 
 
-window.countNRooksSolutions = function(n) {
-  var temp = n*n;
-  temp = Math.round(temp);
- var solutioncount = window.countNRooksSolution(n,temp);
-
-  return solutioncount[0];
-
-}
-
-var extend = function(obj) {
-    if(arguments.length ===1)
-    {
-      return obj;
-    }
-    else
-    {
-     var args =Array.prototype.slice.call(arguments,1);
-    _.each(args, function(value,key){
-
-     for(key in value)
-      {
-        obj[key] = value[key];
-      }
-    });
-
-return obj;
-
-
-
-
-
-    }
-
-  };
-
-
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
-window.countNRooksSolution = function(n, maxCell, oldBoardState, oldClearedStates,oldRooks, solution, oldCurrentCell) {
-      //console.log(n != undefined);
-       if(n != undefined){
-        var solution = new Board({n:n});
-  console.log(solution.attributes)   ;
-         var currentBoardState = solution.rows();
-  console.log("Testing= " + solution.rows());
-
-         var oldClearedStates = {};
-         var rooks = 0;
-          console.log(solution.get('n'));
-
-       }
-       else
-       {
-
-         var currentBoardState = oldBoardState;
-        console.log("CurrentBoardState ||AFTER = " +currentBoardState);
-         var clearedStates = oldClearedStates;
-         rooks = oldRooks;
+window.countNRooksSolutions = function(n) {
+    var solutionCount = 0;
+    //create the board
+    var board = new Board({n:n});
 
 
-         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
+    //var findSolutions = function(){
+    var findSolutions = function(currentRow, n) {
 
-       }
-    if(maxCell)
-      {
-      var currentCell = 0;
-      }
-    else
-    {
-      var currentCell = 0;
-
-    }
-
-         var solutionCount = [0, oldClearedStates]; //fixme
-
-       if(rooks === currentBoardState.length)
+       //reach end of rows
+       if(currentRow === n)
         {
-//          var hasBeenDone = false;
-// debugger;
-//          for(var t = 0; t < clearedStates.length; t++)
-//          {
+        solutionCount++;
+     //   console.log(solutionCount);
+          return;
+        }
 
-//  console.log(clearedStates[t]);
-//  console.log("current Board state: " + currentBoardState);
-//  console.log("rook count = " + rooks);
-//           if(clearedStates[t] === currentBoardState)
-//           {
-//            hasBeenDone = true;
-//           }
-      if(solutionCount[1][currentBoardState])
+
+  //loop through positions on row
+  //
+      for(var i = 0; i < n; i++)
       {
-        return solutionCount;
+    // toggle chesspiece on
+   // console.log(board.togglePiece(0,0));
+       board.togglePiece(currentRow, i);
+   //  console.log("FIND SOLUTIONS HAS EXECUTED");
+      // if collision
+     // console.log(board);
+     // console.log(board.hasAnyRooksConflicts());
+      if(!board.hasAnyRooksConflicts()){
+        findSolutions(currentRow + 1, n);
       }
-
-
-//       }
-
-//        if(hasBeenDone === false)
-//          {
-
-         // solutionCount[1].push(currentBoardState);
-          solutionCount[0] += 1;
-          solutionCount[1][currentBoardState] = currentBoardState;
-         // console.log("Stored!        " + currentBoardState);
-         // console.log("Cleared states: " +clearedStates);
-         // }
-
-         return solutionCount;
-        }
-
-
-
-//console.log("CurrentBoardState = " +currentBoardState);
-  for(var r = 0; r < currentBoardState.length; r++){
-      for(var c = 0; c < currentBoardState[r].length; c++) {
-           var rowConflictExists = false;
-           currentCell +=1;
-        if(currentBoardState[r][c] === 0) {
-            currentBoardState[r][c] = 1;
-
-         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
-
-            rooks += 1;
-
-
-              if(solution.hasAnyRowConflicts()){
-                 currentBoardState[r][c] = 0;
-                 rooks -= 1;
-                rowConflictExists = true;
-              }
-
-
-             if(!rowConflictExists)
-              {
-              if(solution.hasAnyColConflicts()){
-                 currentBoardState[r][c] = 0;
-                 rooks -= 1;
-               }
-              }
-
-
-         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
-
-            if(currentBoardState[r][c] === 1)
-            {
-            //recursive function call;
-         //   console.log("CurrentBoardState ||BEFORE = " +currentBoardState);
-            var returnArr = window.countNRooksSolution(undefined, undefined, currentBoardState, solutionCount[1], rooks, solution);
-            //add to solutioncount
-                solutionCount[0] = solutionCount[0] + returnArr[0];
-
-                 solutionCount[1] = extend(solutionCount[1], returnArr[1]);
-
-
-
-                currentBoardState[r][c] = 0;
-
-         solution.attributes = extend({},currentBoardState,{n:currentBoardState.length})
-
-                rooks -=1;
-
-            }
-          }
-    // if(currentCell === maxCell)
-    // {
-    //   break;
-    // }
-
-        }
-
- // if(currentCell === maxCell)
- //    {
- //      break;
- //    }
-
-
+      // yes ---> disregard potential solutions
+      // no ---> continue branching
+    //toggle chesspiece off
+    board.togglePiece(currentRow, i);
       }
+    };
+
+     // console.log(findSolutions);
+     // console.log(n);
+     // console.log(board);
 
 
 
+    findSolutions(0, n);
 
+  //console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
 
-  //console.log('Number of solutions for ' + solution.rows().length + ' rooks:', solutionCount);
   return solutionCount;
 };
 
@@ -233,7 +86,7 @@ window.countNRooksSolution = function(n, maxCell, oldBoardState, oldClearedState
 window.findNQueensSolution = function(n) {
   var solution = undefined; //fixme
 
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
+  // console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
 
@@ -242,6 +95,6 @@ window.findNQueensSolution = function(n) {
 window.countNQueensSolutions = function(n) {
   var solutionCount = undefined; //fixme
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  // console.log('Number of solutions for ' + n + ' queens:', solutionCount);
   return solutionCount;
 };
